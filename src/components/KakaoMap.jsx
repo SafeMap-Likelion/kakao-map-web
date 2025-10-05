@@ -81,5 +81,10 @@ export default function KakaoMap() {
     }
   }, []);
 
-  return <div id="map" style={{ width: "100%", height: "100vh" }} />;
+  return (
+    <>
+      <div id="map" style={{ width: "100%", height: "100vh" }} />
+      <p>카카오맵</p>
+    </>
+  );
 }
