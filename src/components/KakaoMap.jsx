@@ -44,46 +44,46 @@ export default function KakaoMap() {
           },
         };
 
-        //디버그1
-        window.ReactNativeWebView?.postMessage(
-          JSON.stringify({
-            type: "ready",
-            payload: {
-              center: {
-                lat: map.getCenter().getLat(),
-                lng: map.getCenter().getLng(),
-                hasBridge: !!window.__kakaoBridge__,
-              },
-            },
-          })
-        );
+        // //디버그1
+        // window.ReactNativeWebView?.postMessage(
+        //   JSON.stringify({
+        //     type: "ready",
+        //     payload: {
+        //       center: {
+        //         lat: map.getCenter().getLat(),
+        //         lng: map.getCenter().getLng(),
+        //         hasBridge: !!window.__kakaoBridge__,
+        //       },
+        //     },
+        //   })
+        // );
 
-        //디버그-2
-        window.kakao.maps.event.addListener(map, "click", (e) => {
-          const lat = e.latLng.getLat();
-          const lng = e.latLng.getLng();
-          window.ReactNativeWebView?.postMessage(
-            JSON.stringify({ type: "map_click", payload: { lat, lng } })
-          );
-        });
+        // //디버그-2
+        // window.kakao.maps.event.addListener(map, "click", (e) => {
+        //   const lat = e.latLng.getLat();
+        //   const lng = e.latLng.getLng();
+        //   window.ReactNativeWebView?.postMessage(
+        //     JSON.stringify({ type: "map_click", payload: { lat, lng } })
+        //   );
+        // });
 
-        // 리스너가 바인딩된 시점도 RN에 알림
-        window.ReactNativeWebView?.postMessage(
-          JSON.stringify({ type: "listener_bound" })
-        );
+        // // 리스너가 바인딩된 시점도 RN에 알림
+        // window.ReactNativeWebView?.postMessage(
+        //   JSON.stringify({ type: "listener_bound" })
+        // );
 
-        // sdk로딩과 맵 생성 확인을 위한 기본 마커
-        new window.kakao.maps.Marker({
-          map,
-          position: new window.kakao.maps.LatLng(37.5665, 126.978),
-        });
+        // // sdk로딩과 맵 생성 확인을 위한 기본 마커
+        // new window.kakao.maps.Marker({
+        //   map,
+        //   position: new window.kakao.maps.LatLng(37.5665, 126.978),
+        // });
       });
     }
   }, []);
 
   return (
     <>
-      <div id="map" style={{ width: "100%", height: "100vh" }} />
+      <div id="map" style={{ width: "100%", height: "100%" }} />
     </>
   );
 }
