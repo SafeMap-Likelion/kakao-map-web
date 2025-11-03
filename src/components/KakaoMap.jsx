@@ -26,6 +26,34 @@ export default function KakaoMap() {
         };
 
         const map = new window.kakao.maps.Map(container, options);
+        let currentMarker = null;
+        
+        // React Native로부터 위치 정보를 수신하는 리스너
+        window.addEventListener("message", (event) => {
+          try {
+            const {type, payload} = JSON.parse(event.data);
+
+            if (type === 'UPDATE_LOCATION' && payload) {
+              const { lat, lng } = payload;
+              const currentPos = new window.kakao.maps.LatLng(lat, lng);
+
+              // 지도를 현재 위치로 부드럽게 이동
+              map.panTo(currentPos);
+
+              // 마커가 없으면 새로 만들고, 있으면 위치만 업데이트
+              if (!currentMarker) {
+                currentMarker = new window.kakao.maps.Marker({ position: currentPos });
+                currentMarker.setMap(map);
+              } else {
+                currentMarker.setPosition(currentPos);
+              }
+            }
+          } catch (error) {
+            console.error("Failed to process message from React Native:", error);
+          }
+        });
+        
+
 
         // 전역 노출 (개발/디버그 용)
         //배포 시: map은 전역에서 제외하고 window.__kakaoBridge만 노출하기
