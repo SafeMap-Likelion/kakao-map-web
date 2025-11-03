@@ -26,7 +26,8 @@ export default function KakaoMap() {
         };
 
         const map = new window.kakao.maps.Map(container, options);
-        let currentMarker = null;
+        let currentCircle = null;
+        let currentPos = null;
         
         // React Native로부터 위치 정보를 수신하는 리스너
         window.addEventListener("message", (event) => {
@@ -41,17 +42,37 @@ export default function KakaoMap() {
               map.panTo(currentPos);
 
               // 마커가 없으면 새로 만들고, 있으면 위치만 업데이트
-              if (!currentMarker) {
-                currentMarker = new window.kakao.maps.Marker({ position: currentPos });
-                currentMarker.setMap(map);
-              } else {
-                currentMarker.setPosition(currentPos);
+              if (!currentCircle) {
+                currentCircle = new window.kakao.maps.Circle({
+                  center: currentPos,
+                  radius: 50,
+                  strokeWeight: 3,
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 0.8,
+                  strokeStyle: 'solid',
+                  fillColor: '#FF0000',
+                  fillOpacity: 0.4
+                });
+                currentCircle.setMap(map);
+               } else {
+                currentCircle.setPosition(currentPos);
               }
             }
           } catch (error) {
             console.error("Failed to process message from React Native:", error);
           }
         });
+
+        // "내 위치" 버튼 이벤트 핸들러
+        const myLocationButton = document.getElementById("myLocationButton");
+
+        if(myLocationButton) {
+          myLocationButton.addEventListener("click", () => {
+            if (currentPos) {
+              map.panTo(currentPos);
+            } 
+          });
+        }
         
 
 
