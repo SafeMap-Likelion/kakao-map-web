@@ -26,7 +26,7 @@ export default function KakaoMap() {
         };
 
         const map = new window.kakao.maps.Map(container, options);
-        let currentMarker = null;
+        let currentCircle = null;
         let currentPos = null;
         
         // React Native로부터 위치 정보를 수신하는 리스너
@@ -42,7 +42,7 @@ export default function KakaoMap() {
               map.panTo(currentPos);
 
               // 마커가 없으면 새로 만들고, 있으면 위치만 업데이트
-              if (!currentMarker) {
+              if (!currentCircle) {
                 currentCircle = new window.kakao.maps.Circle({
                   center: currentPos,
                   radius: 50,
