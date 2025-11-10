@@ -29,13 +29,13 @@ export default function KakaoMap() {
         const geocoder = new window.kakao.maps.services.Geocoder();
         let currentCircle = null;
         let currentPos = null;
-        
+
         // React Native로부터 위치 정보를 수신하는 리스너
         window.addEventListener("message", (event) => {
           try {
-            const {type, payload} = JSON.parse(event.data);
+            const { type, payload } = JSON.parse(event.data);
 
-            if (type === 'UPDATE_LOCATION' && payload) {
+            if (type === "UPDATE_LOCATION" && payload) {
               const { lat, lng } = payload;
               const currentPos = new window.kakao.maps.LatLng(lat, lng);
 
@@ -48,33 +48,36 @@ export default function KakaoMap() {
                   center: currentPos,
                   radius: 50,
                   strokeWeight: 3,
-                  strokeColor: '#FF0000',
+                  strokeColor: "#FF0000",
                   strokeOpacity: 0.8,
-                  strokeStyle: 'solid',
-                  fillColor: '#FF0000',
-                  fillOpacity: 0.4
+                  strokeStyle: "solid",
+                  fillColor: "#FF0000",
+                  fillOpacity: 0.4,
                 });
                 currentCircle.setMap(map);
-               } else {
+              } else {
                 currentCircle.setPosition(currentPos);
               }
             }
           } catch (error) {
-            console.error("Failed to process message from React Native:", error);
+            console.error(
+              "Failed to process message from React Native:",
+              error
+            );
           }
         });
 
         // "내 위치" 버튼 이벤트 핸들러
         const myLocationButton = document.getElementById("myLocationButton");
 
-        if(myLocationButton) {
+        if (myLocationButton) {
           myLocationButton.addEventListener("click", () => {
             if (currentPos) {
               map.panTo(currentPos);
-            } 
+            }
           });
         }
-        
+
         // 중앙에 위치할 마커 생성
         const marker = new window.kakao.maps.Marker({
           position: map.getCenter(),
@@ -89,18 +92,22 @@ export default function KakaoMap() {
         // 지도 이동이 멈추면 주소 정보 전송
         window.kakao.maps.event.addListener(map, "idle", function () {
           const center = map.getCenter();
-          geocoder.coord2Address(center.getLng(), center.getLat(), function(result, status) {
-            if (status === window.kakao.maps.services.Status.OK) {
-              const address = result[0].address;
-              const message = {
-                type: "address_changed",
-                payload: {
-                  dong: address.region_3depth_name,
-                },
-              };
-              window.ReactNativeWebView?.postMessage(JSON.stringify(message));
+          geocoder.coord2Address(
+            center.getLng(),
+            center.getLat(),
+            function (result, status) {
+              if (status === window.kakao.maps.services.Status.OK) {
+                const address = result[0].address;
+                const message = {
+                  type: "address_changed",
+                  payload: {
+                    dong: address.region_3depth_name,
+                  },
+                };
+                window.ReactNativeWebView?.postMessage(JSON.stringify(message));
+              }
             }
-          });
+          );
         });
 
         // 전역 노출 (개발/디버그 용)
@@ -126,6 +133,27 @@ export default function KakaoMap() {
   return (
     <>
       <div id="map" style={{ width: "100%", height: "100%" }} />
+      {/* 지도 위 주소 텍스트 표시용 */}
+      <div
+        id="address-label"
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          backgroundColor: "rgba(255,255,255,0.9)",
+          padding: "6px 12px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          fontSize: "14px",
+          fontWeight: "500",
+          color: "#333",
+          zIndex: 10,
+          whiteSpace: "nowrap",
+        }}
+      >
+        지도 위치를 불러오는 중...
+      </div>
     </>
   );
 }
