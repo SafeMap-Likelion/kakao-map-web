@@ -9,7 +9,7 @@ export default function KakaoMap() {
     }
 
     const script = document.createElement("script");
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_APP_KEY}&autoload=false`;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_APP_KEY}&autoload=false&libraries=services`;
     script.async = true;
     document.head.appendChild(script);
 
@@ -26,6 +26,7 @@ export default function KakaoMap() {
         };
 
         const map = new window.kakao.maps.Map(container, options);
+        const geocoder = new window.kakao.maps.services.Geocoder();
         let currentCircle = null;
         let currentPos = null;
         
@@ -74,8 +75,6 @@ export default function KakaoMap() {
           });
         }
         
-
-
         // 중앙에 위치할 마커 생성
         const marker = new window.kakao.maps.Marker({
           position: map.getCenter(),
@@ -87,17 +86,21 @@ export default function KakaoMap() {
           marker.setPosition(map.getCenter());
         });
 
-        // 지도 드래그가 끝나면 React Native로 좌표 전송
-        window.kakao.maps.event.addListener(map, "dragend", function () {
+        // 지도 이동이 멈추면 주소 정보 전송
+        window.kakao.maps.event.addListener(map, "idle", function () {
           const center = map.getCenter();
-          const message = {
-            type: "map_center_changed",
-            payload: {
-              latitude: center.getLat(),
-              longitude: center.getLng(),
-            },
-          };
-          window.ReactNativeWebView?.postMessage(JSON.stringify(message));
+          geocoder.coord2Address(center.getLng(), center.getLat(), function(result, status) {
+            if (status === window.kakao.maps.services.Status.OK) {
+              const address = result[0].address;
+              const message = {
+                type: "address_changed",
+                payload: {
+                  dong: address.region_3depth_name,
+                },
+              };
+              window.ReactNativeWebView?.postMessage(JSON.stringify(message));
+            }
+          });
         });
 
         // 전역 노출 (개발/디버그 용)
