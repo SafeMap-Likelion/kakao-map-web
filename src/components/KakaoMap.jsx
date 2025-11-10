@@ -102,6 +102,7 @@ export default function KakaoMap() {
                   type: "address_changed",
                   payload: {
                     dong: address.region_3depth_name,
+                    fullAddress: address.address_name, // ★ 추가
                   },
                 };
                 window.ReactNativeWebView?.postMessage(JSON.stringify(message));
