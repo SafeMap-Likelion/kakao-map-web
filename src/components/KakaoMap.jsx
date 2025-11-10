@@ -135,26 +135,6 @@ export default function KakaoMap() {
     <>
       <div id="map" style={{ width: "100%", height: "100%" }} />
       {/* 지도 위 주소 텍스트 표시용 */}
-      <div
-        id="address-label"
-        style={{
-          position: "absolute",
-          top: "10px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          backgroundColor: "rgba(255,255,255,0.9)",
-          padding: "6px 12px",
-          borderRadius: "8px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-          fontSize: "14px",
-          fontWeight: "500",
-          color: "#333",
-          zIndex: 10,
-          whiteSpace: "nowrap",
-        }}
-      >
-        지도 위치를 불러오는 중...
-      </div>
     </>
   );
 }
