@@ -76,6 +76,30 @@ export default function KakaoMap() {
         
 
 
+        // 중앙에 위치할 마커 생성
+        const marker = new window.kakao.maps.Marker({
+          position: map.getCenter(),
+          map: map,
+        });
+
+        // 지도의 중심이 변경될 때 마커 위치 업데이트
+        window.kakao.maps.event.addListener(map, "center_changed", function () {
+          marker.setPosition(map.getCenter());
+        });
+
+        // 지도 드래그가 끝나면 React Native로 좌표 전송
+        window.kakao.maps.event.addListener(map, "dragend", function () {
+          const center = map.getCenter();
+          const message = {
+            type: "map_center_changed",
+            payload: {
+              latitude: center.getLat(),
+              longitude: center.getLng(),
+            },
+          };
+          window.ReactNativeWebView?.postMessage(JSON.stringify(message));
+        });
+
         // 전역 노출 (개발/디버그 용)
         //배포 시: map은 전역에서 제외하고 window.__kakaoBridge만 노출하기
         window.__map = map;
@@ -92,40 +116,6 @@ export default function KakaoMap() {
             return true;
           },
         };
-
-        // //디버그1
-        // window.ReactNativeWebView?.postMessage(
-        //   JSON.stringify({
-        //     type: "ready",
-        //     payload: {
-        //       center: {
-        //         lat: map.getCenter().getLat(),
-        //         lng: map.getCenter().getLng(),
-        //         hasBridge: !!window.__kakaoBridge__,
-        //       },
-        //     },
-        //   })
-        // );
-
-        // //디버그-2
-        // window.kakao.maps.event.addListener(map, "click", (e) => {
-        //   const lat = e.latLng.getLat();
-        //   const lng = e.latLng.getLng();
-        //   window.ReactNativeWebView?.postMessage(
-        //     JSON.stringify({ type: "map_click", payload: { lat, lng } })
-        //   );
-        // });
-
-        // // 리스너가 바인딩된 시점도 RN에 알림
-        // window.ReactNativeWebView?.postMessage(
-        //   JSON.stringify({ type: "listener_bound" })
-        // );
-
-        // // sdk로딩과 맵 생성 확인을 위한 기본 마커
-        // new window.kakao.maps.Marker({
-        //   map,
-        //   position: new window.kakao.maps.LatLng(37.5665, 126.978),
-        // });
       });
     }
   }, []);
